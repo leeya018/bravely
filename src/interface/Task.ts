@@ -3,4 +3,5 @@ export type Task = {
   timeToComplete: number; // Time in minutes
   difficultyLevel: "Easy" | "Medium" | "Hard";
   category: "Social" | "Creative" | "Physical" | "Self-Care";
+  completed: boolean;
 };

@@ -1,32 +1,72 @@
 "use client";
 
+import PrizeItem from "@/components/PrizeItem";
 import TaskTimer from "@/components/TaskTimer";
+import { Prize } from "@/interface/Prize";
 import { Task } from "@/interface/Task";
+import { prizeItems, ShowItem } from "@/util";
 import { taskItems } from "@/util.";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [tasks, setTasks] = useState<Task[]>(taskItems);
   const [randInd, setRandInd] = useState<number>(0);
-  const [toShow, setToShow] = useState<string>("chosen");
+  const [toShow, setToShow] = useState<string>(ShowItem.chosen);
+  const [myScore, setMyScore] = useState<number>(() => {
+    // Retrieve the score from localStorage or default to 0
+    const savedScore = localStorage.getItem("myScore");
+    return savedScore ? parseInt(savedScore) : 0;
+  });
 
-  const addTask = () => {
-    const newTask: Task = {
-      name: `Task ${tasks.length + 1}`,
-      timeToComplete: 5,
-      difficultyLevel: "Easy",
-      category: "Social",
-    };
-    setTasks([...tasks, newTask]);
+  const [prize, setPrize] = useState<Prize | null>(null);
+
+  useEffect(() => {
+    // Save the score to localStorage whenever it changes
+    localStorage.setItem("myScore", myScore.toString());
+    const newPrizes = prizeItems
+      .sort((p1, p2) => p1.score - p2.score)
+      .filter((p) => p.score < myScore);
+    if (newPrizes.length > 0) {
+      setPrize(newPrizes.slice(-1)[0]);
+      if (!localStorage.getItem("prizeTimestamp"))
+        awardPrize(newPrizes.slice(-1)[0]);
+    }
+  }, [myScore]);
+
+  const addToScore = (score: number) => {
+    setMyScore((prev) => prev + score);
+    chooseRandInd();
   };
-
   const chooseRandInd = () => {
-    setToShow("chosen");
+    setToShow(ShowItem.chosen);
     setRandInd(Math.floor(Math.random() * taskItems.length));
   };
+
+  const awardPrize = (prize: Prize) => {
+    const currentTime = new Date().getTime();
+    localStorage.setItem("prize", JSON.stringify(prize));
+    localStorage.setItem("prizeTimestamp", currentTime.toString());
+  };
+
+  const updatePrize = (prize: Prize | null) => {
+    setPrize(prize);
+  };
+
   return (
     <div>
       <div className="p-4">
+        <button
+          onClick={() => {
+            localStorage.clear();
+            setMyScore(0);
+          }}
+          className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Reset
+        </button>
+        <div className="text-xl font-semibold">Target Of Day : 10</div>
+        <div className="mt-4 text-xl ">My Scroe : {myScore}</div>
+
         <div className="flex gap-3">
           <button
             onClick={chooseRandInd}
@@ -35,40 +75,29 @@ export default function HomePage() {
             Change task
           </button>
           <button
-            onClick={() => setToShow("list")}
+            onClick={() => setToShow(ShowItem.list)}
             className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
           >
             Show List
           </button>
-          <button
-            onClick={addTask}
-            className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Add Task
-          </button>
         </div>
-        {toShow === "list" && (
+
+        {/* prize card */}
+        {prize && <PrizeItem prize={prize} updatePrize={updatePrize} />}
+        {toShow === ShowItem.list && (
           <div className="space-y-4">
             {tasks.map((task, index) => (
-              <TaskTimer
-                isStart={false}
-                key={index}
-                name={task.name}
-                timeToComplete={task.timeToComplete}
-              />
+              <TaskTimer toShow={toShow} key={index} task={task} />
             ))}
           </div>
         )}
 
-        {toShow === "chosen" && (
-          <div>
-            <div>{tasks[randInd].name}</div>
-            <TaskTimer
-              isStart={true}
-              name={tasks[randInd].name}
-              timeToComplete={tasks[randInd].timeToComplete}
-            />
-          </div>
+        {toShow === ShowItem.chosen && !prize && (
+          <TaskTimer
+            task={tasks[randInd]}
+            toShow={toShow}
+            onCheck={addToScore}
+          />
         )}
       </div>
     </div>
