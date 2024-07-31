@@ -12,7 +12,7 @@ export const getScore = (difficultyLevel: string) => {
   return 0;
 };
 
-export const tasks: Task[] = [
+export const taskItems: Task[] = [
   {
     name: "Compliment a stranger",
     timeToComplete: 5,

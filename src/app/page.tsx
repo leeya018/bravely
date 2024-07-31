@@ -4,8 +4,7 @@ import PrizeItem from "@/components/PrizeItem";
 import TaskTimer from "@/components/TaskTimer";
 import { Prize } from "@/interface/Prize";
 import { Task } from "@/interface/Task";
-import { prizeItems, ShowItem } from "@/util";
-import { taskItems } from "@/util.";
+import { prizeItems, ShowItem, taskItems } from "@/util";
 import React, { useEffect, useState } from "react";
 
 export default function HomePage() {
