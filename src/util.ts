@@ -296,7 +296,7 @@ export const taskItems: Task[] = [
 ];
 
 export const prizeItems: Prize[] = [
-  { name: "Gift Card", score: 5 },
+  { name: "Gift Card", score: 1 },
   { name: "Free Coffee", score: 10 },
   { name: "Movie Tickets", score: 30 },
   { name: "Discount Coupon", score: 15 },

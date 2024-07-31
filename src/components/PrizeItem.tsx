@@ -7,11 +7,13 @@ type PrizeItemProps = {
 };
 const PrizeItem = ({ prize, updatePrize }: PrizeItemProps) => {
   useEffect(() => {
-    const savedPrize = loadPrize();
-    if (savedPrize) {
-      updatePrize(savedPrize);
-    } else {
-      updatePrize(null); // Clear the prize if 5 minutes have passed
+    if (typeof window !== "undefined") {
+      const savedPrize = loadPrize();
+      if (savedPrize) {
+        updatePrize(savedPrize);
+      } else {
+        updatePrize(null); // Clear the prize if 5 minutes have passed
+      }
     }
   }, []);
 
@@ -25,7 +27,7 @@ const PrizeItem = ({ prize, updatePrize }: PrizeItemProps) => {
       const minutesPassed = (currentTime - savedTime) / (1000 * 60); // Convert milliseconds to minutes
 
       // 100 = > minuts
-      if (minutesPassed < 100) {
+      if (minutesPassed < 0.1) {
         return JSON.parse(prizeData);
       } else {
         updatePrize(null); // Clear the prize if 5 minutes have passed

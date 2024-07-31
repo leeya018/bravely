@@ -11,17 +11,22 @@ export default function HomePage() {
   const [tasks, setTasks] = useState<Task[]>(taskItems);
   const [randInd, setRandInd] = useState<number>(0);
   const [toShow, setToShow] = useState<string>(ShowItem.chosen);
-  const [myScore, setMyScore] = useState<number>(() => {
-    // Retrieve the score from localStorage or default to 0
-    const savedScore = localStorage.getItem("myScore");
-    return savedScore ? parseInt(savedScore) : 0;
-  });
+  const [myScore, setMyScore] = useState<number>(0);
+  const [hasStorage, setHasStorage] = useState<boolean>(false);
 
   const [prize, setPrize] = useState<Prize | null>(null);
 
   useEffect(() => {
-    // Save the score to localStorage whenever it changes
     if (typeof window !== "undefined") {
+      const savedScore = localStorage.getItem("myScore");
+      setMyScore(savedScore ? parseInt(savedScore) : 0);
+      setHasStorage(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save the score to localStorage whenever it changes
+    if (hasStorage) {
       localStorage.setItem("myScore", myScore.toString());
       const newPrizes = prizeItems
         .sort((p1, p2) => p1.score - p2.score)
@@ -32,7 +37,7 @@ export default function HomePage() {
           awardPrize(newPrizes.slice(-1)[0]);
       }
     }
-  }, [myScore]);
+  }, [myScore, hasStorage]);
 
   const addToScore = (score: number) => {
     setMyScore((prev) => prev + score);
@@ -84,7 +89,7 @@ export default function HomePage() {
         </div>
 
         {/* prize card */}
-        {prize && <PrizeItem prize={prize} updatePrize={updatePrize} />}
+        {/* {prize && <PrizeItem prize={prize} updatePrize={updatePrize} />} */}
         {toShow === ShowItem.list && (
           <div className="space-y-4">
             {tasks.map((task, index) => (
@@ -93,7 +98,8 @@ export default function HomePage() {
           </div>
         )}
 
-        {toShow === ShowItem.chosen && !prize && (
+        {toShow === ShowItem.chosen && (
+          // {toShow === ShowItem.chosen && !prize && (
           <TaskTimer
             task={tasks[randInd]}
             toShow={toShow}
