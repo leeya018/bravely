@@ -1,37 +1,76 @@
-import { addColorToSequence } from "@/reducers/actions";
-import { gameReducer } from "@/reducers/game";
-import { COLORS } from "@/util";
-import React from "react";
-import { connect } from "react-redux";
+"use client";
 
-export default function SimonPage() {
-  // const {} = gameReducer()
-  const startGame = () => {
-    const rand = Math.floor(Math.random() * 4);
-    addColorToSequence(COLORS[rand]);
+import TaskTimer from "@/components/TaskTimer";
+import { Task } from "@/interface/Task";
+import { taskItems } from "@/util.";
+import React, { useState } from "react";
+
+export default function HomePage() {
+  const [tasks, setTasks] = useState<Task[]>(taskItems);
+  const [randInd, setRandInd] = useState<number>(0);
+  const [toShow, setToShow] = useState<string>("chosen");
+
+  const addTask = () => {
+    const newTask: Task = {
+      name: `Task ${tasks.length + 1}`,
+      timeToComplete: 5,
+      difficultyLevel: "Easy",
+      category: "Social",
+    };
+    setTasks([...tasks, newTask]);
+  };
+
+  const chooseRandInd = () => {
+    setToShow("chosen");
+    setRandInd(Math.floor(Math.random() * taskItems.length));
   };
   return (
-    <section>
-      <h1>simon</h1>
-      <button onClick={startGame}>start game</button>
-      <div className="w-full flex justify-center">
-        <div className="grid grid-cols-2">
-          <button className="p-2 bg-red-500 h-40 w-40"></button>
-          <button className="p-2 bg-blue-500 h-40 w-40"></button>
-          <button className="p-2 bg-green-500 h-40 w-40"></button>
-          <button className="p-2 bg-yellow-500 h-40 w-40"></button>
+    <div>
+      <div className="p-4">
+        <div className="flex gap-3">
+          <button
+            onClick={chooseRandInd}
+            className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Change task
+          </button>
+          <button
+            onClick={() => setToShow("list")}
+            className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Show List
+          </button>
+          <button
+            onClick={addTask}
+            className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Add Task
+          </button>
         </div>
+        {toShow === "list" && (
+          <div className="space-y-4">
+            {tasks.map((task, index) => (
+              <TaskTimer
+                isStart={false}
+                key={index}
+                name={task.name}
+                timeToComplete={task.timeToComplete}
+              />
+            ))}
+          </div>
+        )}
+
+        {toShow === "chosen" && (
+          <div>
+            <div>{tasks[randInd].name}</div>
+            <TaskTimer
+              isStart={true}
+              name={tasks[randInd].name}
+              timeToComplete={tasks[randInd].timeToComplete}
+            />
+          </div>
+        )}
       </div>
-    </section>
+    </div>
   );
 }
-
-const mapStateToProps = (state) => ({
-  todos: state.todos,
-});
-
-const mapDispatchToProps = {
-  addColorToSequence,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(SimonPage);

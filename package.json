@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.5",
+    "mobx": "^6.12.3",
+    "mobx-persist": "^0.4.1",
+    "mobx-react-lite": "^4.0.7",
     "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18",
