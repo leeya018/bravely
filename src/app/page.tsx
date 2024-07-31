@@ -21,14 +21,16 @@ export default function HomePage() {
 
   useEffect(() => {
     // Save the score to localStorage whenever it changes
-    localStorage.setItem("myScore", myScore.toString());
-    const newPrizes = prizeItems
-      .sort((p1, p2) => p1.score - p2.score)
-      .filter((p) => p.score < myScore);
-    if (newPrizes.length > 0) {
-      setPrize(newPrizes.slice(-1)[0]);
-      if (!localStorage.getItem("prizeTimestamp"))
-        awardPrize(newPrizes.slice(-1)[0]);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("myScore", myScore.toString());
+      const newPrizes = prizeItems
+        .sort((p1, p2) => p1.score - p2.score)
+        .filter((p) => p.score < myScore);
+      if (newPrizes.length > 0) {
+        setPrize(newPrizes.slice(-1)[0]);
+        if (!localStorage.getItem("prizeTimestamp"))
+          awardPrize(newPrizes.slice(-1)[0]);
+      }
     }
   }, [myScore]);
 
