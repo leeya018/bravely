@@ -15,7 +15,7 @@ export default function HomePage() {
   const [hasStorage, setHasStorage] = useState<boolean>(false);
 
   const [prize, setPrize] = useState<Prize | null>(null);
-
+  console.log("hello");
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedScore = localStorage.getItem("myScore");
@@ -25,6 +25,7 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    debugger;
     // Save the score to localStorage whenever it changes
     if (hasStorage) {
       localStorage.setItem("myScore", myScore.toString());
